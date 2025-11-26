@@ -1,3 +1,4 @@
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { StorageService } from '../services/storage';
 import type { Item } from '../types';
@@ -24,13 +25,28 @@ export function Feed({ storage }: FeedProps) {
             alignItems: 'start' // Masonry-ish effect requires more complex CSS or JS, simple grid for now
         }}>
             {items.map((item) => (
-                <Card key={item.id} item={item} />
+                <Card key={item.id} item={item} storage={storage} />
             ))}
         </div>
     );
 }
 
-function Card({ item }: { item: Item }) {
+function Card({ item, storage }: { item: Item, storage: StorageService }) {
+    const [imageUrl, setImageUrl] = React.useState<string | null>(null);
+
+    React.useEffect(() => {
+        if (item.type === 'image' && item.image) {
+            storage.getAsset(item.image).then(base64 => {
+                if (base64) {
+                    // Determine mime type from extension
+                    const ext = item.image!.split('.').pop();
+                    const mime = ext === 'png' ? 'image/png' : ext === 'jpg' || ext === 'jpeg' ? 'image/jpeg' : 'image/webp';
+                    setImageUrl(`data:${mime};base64,${base64}`);
+                }
+            });
+        }
+    }, [item, storage]);
+
     return (
         <div style={{
             border: '1px solid var(--color-gray-200)',
@@ -39,6 +55,7 @@ function Card({ item }: { item: Item }) {
             backgroundColor: 'white',
             transition: 'transform 0.2s, box-shadow 0.2s',
             cursor: 'pointer',
+            overflow: 'hidden',
         }}
             onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-2px)';
@@ -49,6 +66,12 @@ function Card({ item }: { item: Item }) {
                 e.currentTarget.style.boxShadow = 'none';
             }}
         >
+            {item.type === 'image' && imageUrl && (
+                <div style={{ margin: '-1.5rem -1.5rem 1rem -1.5rem' }}>
+                    <img src={imageUrl} alt={item.content} style={{ width: '100%', display: 'block' }} />
+                </div>
+            )}
+
             {item.type === 'link' ? (
                 <div>
                     <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem', wordBreak: 'break-word' }}>
@@ -57,6 +80,10 @@ function Card({ item }: { item: Item }) {
                         </a>
                     </h3>
                     <p className="text-gray text-sm" style={{ wordBreak: 'break-all' }}>{item.content}</p>
+                </div>
+            ) : item.type === 'image' ? (
+                <div>
+                    {/* Image is handled above, maybe show caption if any */}
                 </div>
             ) : (
                 <div>

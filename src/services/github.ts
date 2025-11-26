@@ -47,11 +47,11 @@ export class GitHubService {
     return data;
   }
 
-  async createFile(path: string, content: string, message: string) {
+  async createFile(path: string, content: string, message: string, isBase64Encoded = false) {
     if (!this.owner || !this.repo) throw new Error("Repo not set");
 
-    // Base64 encode content for GitHub API
-    const contentEncoded = btoa(unescape(encodeURIComponent(content)));
+    // Base64 encode content for GitHub API if not already encoded
+    const contentEncoded = isBase64Encoded ? content : btoa(unescape(encodeURIComponent(content)));
 
     await this.octokit.rest.repos.createOrUpdateFileContents({
       owner: this.owner,
@@ -74,6 +74,25 @@ export class GitHubService {
       if ('content' in data) {
         const content = decodeURIComponent(escape(atob(data.content)));
         return content;
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async getFileRaw(path: string) {
+    if (!this.owner || !this.repo) throw new Error("Repo not set");
+    try {
+      const { data } = await this.octokit.rest.repos.getContent({
+        owner: this.owner,
+        repo: this.repo,
+        path,
+      });
+
+      if ('content' in data) {
+        // Return raw base64 content (newlines removed)
+        return data.content.replace(/\n/g, '');
       }
       return null;
     } catch (e) {

@@ -13,23 +13,29 @@ interface CaptureBarProps {
 export function CaptureBar({ storage, onSave }: CaptureBarProps) {
     const [input, setInput] = useState('');
     const [isSaving, setIsSaving] = useState(false);
+    const [isDragOver, setIsDragOver] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!input.trim()) return;
-
+    const handleSave = async (content: string, file?: File) => {
         setIsSaving(true);
         try {
-            const isUrl = /^(http|https):\/\/[^ "]+$/.test(input);
-            const type: ItemType = isUrl ? 'link' : 'note';
+            let type: ItemType = 'note';
+            let imagePath: string | undefined;
+
+            if (file) {
+                type = 'image';
+                imagePath = await storage.uploadAsset(file);
+            } else if (/^(http|https):\/\/[^ "]+$/.test(content)) {
+                type = 'link';
+            }
 
             const item: Item = {
                 id: generateId(),
                 type,
-                content: input,
+                content: content || (file ? file.name : ''),
                 createdAt: new Date().toISOString(),
                 tags: [],
-                title: isUrl ? input : undefined, // Placeholder title
+                title: type === 'link' ? content : undefined,
+                image: imagePath,
             };
 
             await storage.saveItem(item);
@@ -43,24 +49,49 @@ export function CaptureBar({ storage, onSave }: CaptureBarProps) {
         }
     };
 
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!input.trim()) return;
+        handleSave(input);
+    };
+
+    const handleDrop = async (e: React.DragEvent) => {
+        e.preventDefault();
+        setIsDragOver(false);
+
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            const file = e.dataTransfer.files[0];
+            if (file.type.startsWith('image/')) {
+                await handleSave('', file);
+            }
+        }
+    };
+
     return (
         <div style={{ marginBottom: '2rem' }}>
-            <form onSubmit={handleSubmit} style={{ position: 'relative' }}>
+            <form
+                onSubmit={handleSubmit}
+                style={{ position: 'relative' }}
+                onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+                onDragLeave={() => setIsDragOver(false)}
+                onDrop={handleDrop}
+            >
                 <input
                     type="text"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    placeholder="Save a link, note, or idea..."
+                    placeholder={isDragOver ? "Drop image here..." : "Save a link, note, or drag an image..."}
                     disabled={isSaving}
                     style={{
                         width: '100%',
                         padding: '1rem 1.5rem',
                         borderRadius: 'var(--radius-md)',
-                        border: '1px solid var(--color-gray-200)',
+                        border: isDragOver ? '2px dashed var(--color-accent)' : '1px solid var(--color-gray-200)',
                         fontSize: '1.125rem',
                         boxShadow: 'var(--shadow-sm)',
                         outline: 'none',
-                        transition: 'box-shadow 0.2s',
+                        transition: 'all 0.2s',
+                        backgroundColor: isDragOver ? 'var(--color-gray-100)' : 'white',
                     }}
                     onFocus={(e) => e.target.style.boxShadow = 'var(--shadow-md)'}
                     onBlur={(e) => e.target.style.boxShadow = 'var(--shadow-sm)'}
