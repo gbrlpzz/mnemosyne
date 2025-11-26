@@ -102,8 +102,8 @@ export function Feed({ storage }: FeedProps) {
             </div>
             
             {filteredItems.length === 0 && (
-                <div style={{ padding: '80px 0', textAlign: 'center', color: '#999' }}>
-                    NO ITEMS FOUND
+                <div style={{ padding: '80px 0', textAlign: 'center', color: 'var(--color-text-muted)', fontStyle: 'italic', fontFamily: 'var(--font-serif)' }}>
+                    The archive is empty.
                 </div>
             )}
         </div>

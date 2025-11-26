@@ -29,6 +29,9 @@ export function ItemCard({ item, storage, onUpdate, onDelete }: ItemCardProps) {
     const [showActions, setShowActions] = useState(false);
     const actionsRef = useRef<HTMLDivElement>(null);
 
+    // Generate a random rotation between -2 and 2 degrees for that "pinned" look
+    const rotation = React.useMemo(() => Math.random() * 4 - 2, []);
+
     useEffect(() => {
         if (item.type === 'image' && item.image) {
             storage.getAsset(item.image).then(base64 => {
@@ -93,7 +96,7 @@ export function ItemCard({ item, storage, onUpdate, onDelete }: ItemCardProps) {
 
     if (isEditing) {
         return (
-            <div className="grid-item card-swiss" style={{ background: '#f9f9f9', padding: '1rem' }}>
+            <div className="grid-item card-swiss" style={{ background: 'var(--color-surface)', padding: '1rem', border: '1px solid var(--color-border)' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     {item.type === 'link' && (
                         <input 
@@ -106,14 +109,14 @@ export function ItemCard({ item, storage, onUpdate, onDelete }: ItemCardProps) {
                     )}
                     <textarea 
                         className="input-swiss" 
-                        style={{ fontSize: '1rem', borderBottom: '1px solid #ddd', resize: 'vertical', minHeight: '100px' }}
+                        style={{ fontSize: '1rem', borderBottom: '1px solid var(--color-border)', resize: 'vertical', minHeight: '100px' }}
                         value={editContent} 
                         onChange={e => setEditContent(e.target.value)}
                         placeholder="Content"
                     />
                     <textarea
                         className="input-swiss"
-                        style={{ fontSize: '0.9rem', borderBottom: '1px solid #ddd' }}
+                        style={{ fontSize: '0.9rem', borderBottom: '1px solid var(--color-border)' }}
                         value={editDescription}
                         onChange={e => setEditDescription(e.target.value)}
                         placeholder="Add a note/description..."
@@ -135,66 +138,74 @@ export function ItemCard({ item, storage, onUpdate, onDelete }: ItemCardProps) {
     }
 
     return (
-        <div className={`grid-item card-swiss ${item.archived ? 'opacity-50' : ''}`}>
+        <div 
+            className={`grid-item card-swiss type-${item.type} ${item.archived ? 'opacity-50' : ''}`}
+            style={{ transform: `rotate(${rotation}deg)` }}
+        >
+            {/* Visual Pin for Notes/Links */}
+            {item.type !== 'image' && (
+                <div className="visual-pin"></div>
+            )}
+
             {item.type === 'image' && imageUrl && (
                 <div className="card-image-container">
                     <img src={imageUrl} alt={item.content} />
                 </div>
             )}
 
-            <div className="card-meta">
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <div style={{ padding: item.type === 'image' ? '0' : '0' }}>
+                <div className="card-meta">
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        {item.pinned && <Pin size={12} fill="currentColor" className="icon-pin" />}
+                        {item.starred && <Star size={12} fill="currentColor" color="var(--color-accent)" />}
+                    </div>
+                    {/* Date moved to bottom or tooltip to clean up header? Let's keep it subtle */}
+                </div>
+
+                {item.type === 'link' && (
+                    <h3 className="card-title">
+                        <a href={item.content} target="_blank" rel="noopener noreferrer">
+                            {item.title || item.content} <ExternalLink size={12} style={{ verticalAlign: 'middle', opacity: 0.5 }} />
+                        </a>
+                    </h3>
+                )}
+
+                {item.content && item.type !== 'link' && (
+                    <div className="card-content">
+                        {item.type === 'image' ? (
+                            <div className="image-caption">{item.content}</div>
+                        ) : (
+                            <div className="note-content">{item.content}</div>
+                        )}
+                    </div>
+                )}
+
+                {item.description && (
+                    <div className="card-description">
+                        {item.description}
+                    </div>
+                )}
+
+                <div className="card-footer">
                     <span className="card-date">
                         {formatDistanceToNow(new Date(item.createdAt), { addSuffix: true })}
                     </span>
-                    {item.pinned && <Pin size={12} fill="currentColor" />}
-                    {item.starred && <Star size={12} fill="currentColor" color="var(--color-accent)" />}
-                </div>
-                <span className="card-type">{item.type}</span>
-            </div>
-
-            {item.type === 'link' && (
-                <h3 className="card-title">
-                    <a href={item.content} target="_blank" rel="noopener noreferrer">
-                        {item.title || item.content} <ExternalLink size={12} style={{ verticalAlign: 'middle' }} />
-                    </a>
-                </h3>
-            )}
-
-            {item.content && item.type !== 'link' && (
-                <div className="card-content">
-                    {item.type === 'image' ? (
-                        <div style={{ fontStyle: 'italic' }}>{item.content}</div>
-                    ) : (
-                        <div>{item.content}</div>
+                    {item.tags && item.tags.length > 0 && (
+                        <div className="card-tags">
+                            {item.tags.map(tag => (
+                                <span key={tag} className="tag">#{tag}</span>
+                            ))}
+                        </div>
                     )}
                 </div>
-            )}
-
-            {item.description && (
-                <div className="card-content mt-sm" style={{ 
-                    borderLeft: '2px solid var(--color-accent)', 
-                    paddingLeft: '12px',
-                    color: 'var(--color-text)'
-                }}>
-                    {item.description}
-                </div>
-            )}
-
-            {item.tags && item.tags.length > 0 && (
-                <div className="card-tags">
-                    {item.tags.map(tag => (
-                        <span key={tag} className="tag">#{tag}</span>
-                    ))}
-                </div>
-            )}
+            </div>
 
             <div className="card-actions-hover" ref={actionsRef}>
                 <button onClick={() => setIsEditing(true)} title="Edit"><MoreHorizontal size={16} /></button>
                 <button onClick={togglePin} title="Pin"><Pin size={16} fill={item.pinned ? 'currentColor' : 'none'} /></button>
                 <button onClick={toggleStar} title="Star"><Star size={16} fill={item.starred ? 'currentColor' : 'none'} /></button>
                 <button onClick={toggleArchive} title="Archive"><Archive size={16} /></button>
-                <button onClick={deleteItem} title="Delete" style={{ color: 'red' }}><Trash2 size={16} /></button>
+                <button onClick={deleteItem} title="Delete" style={{ color: 'var(--color-accent)' }}><Trash2 size={16} /></button>
             </div>
         </div>
     );

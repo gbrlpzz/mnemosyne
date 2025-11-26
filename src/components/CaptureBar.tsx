@@ -133,7 +133,7 @@ export function CaptureBar({ storage, onSave }: CaptureBarProps) {
                 <input
                     type="text"
                     className="input-swiss"
-                    placeholder="Capture something..."
+                    placeholder="Add a memory, reference, or curiosity..."
                     value={input}
                     onChange={(e) => {
                         setInput(e.target.value);
@@ -142,6 +142,7 @@ export function CaptureBar({ storage, onSave }: CaptureBarProps) {
                     onFocus={() => setIsExpanded(true)}
                     onKeyDown={handleKeyDown}
                     autoComplete="off"
+                    style={{ fontSize: '1.25rem', padding: '12px 0' }}
                 />
                 {droppedFile && (
                     <div style={{ 
@@ -153,8 +154,10 @@ export function CaptureBar({ storage, onSave }: CaptureBarProps) {
                         alignItems: 'center', 
                         gap: '8px',
                         fontSize: '0.875rem',
-                        background: '#eee',
-                        padding: '4px 8px'
+                        background: 'var(--color-surface)',
+                        border: '1px solid var(--color-border)',
+                        padding: '4px 8px',
+                        color: 'var(--color-text)'
                     }}>
                         <ImageIcon size={14} />
                         {droppedFile.name}
@@ -166,7 +169,7 @@ export function CaptureBar({ storage, onSave }: CaptureBarProps) {
             {isExpanded && (
                 <div className="capture-expanded">
                     <textarea
-                        placeholder="Add a note or description..."
+                        placeholder="Add context, thoughts, or details..."
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         onKeyDown={handleKeyDown}
@@ -175,10 +178,12 @@ export function CaptureBar({ storage, onSave }: CaptureBarProps) {
                             width: '100%', 
                             resize: 'none', 
                             background: 'transparent', 
-                            fontFamily: 'var(--font-sans)',
-                            fontSize: '0.95rem',
+                            fontFamily: 'var(--font-serif)',
+                            fontSize: '1.1rem',
                             border: 'none',
-                            outline: 'none'
+                            outline: 'none',
+                            color: 'var(--color-text)',
+                            marginBottom: '16px'
                         }}
                     />
                     
@@ -199,7 +204,13 @@ export function CaptureBar({ storage, onSave }: CaptureBarProps) {
                             onKeyDown={handleTagKeyDown}
                             placeholder={tags.length === 0 ? "Add tags..." : "Add another..."}
                             className="tag-input"
-                            style={{ flex: 1, minWidth: '80px' }}
+                            style={{ 
+                                flex: 1, 
+                                minWidth: '80px',
+                                background: 'transparent',
+                                color: 'var(--color-text-muted)',
+                                borderBottom: '1px solid transparent'
+                            }}
                         />
                     </div>
 

@@ -25,46 +25,45 @@ export function Login() {
 
     return (
         <div className="login-swiss">
-            <h1 style={{ fontSize: '3rem', fontWeight: 700, letterSpacing: '-0.04em', marginBottom: '1rem' }}>MNEMOSYNE</h1>
-            <p style={{ fontSize: '1.25rem', color: 'var(--color-text-secondary)', marginBottom: '3rem' }}>
-                Minimal memory storage.
+            <h1 style={{ marginBottom: '1rem' }}>MNEMOSYNE</h1>
+            <p style={{ fontSize: '1.25rem', color: 'var(--color-text-muted)', marginBottom: '3rem', fontFamily: 'var(--font-serif)', fontStyle: 'italic' }}>
+                The Atlas of Memory.
             </p>
 
-            <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+            <form onSubmit={handleSubmit} style={{ width: '100%', maxWidth: '400px' }}>
                 <input
                     type="password"
                     className="input-swiss"
                     value={token}
                     onChange={(e) => setToken(e.target.value)}
-                    placeholder="GITHUB TOKEN"
+                    placeholder="Enter Access Key"
                     disabled={isLoading}
                     autoComplete="off"
+                    style={{ textAlign: 'center', fontSize: '1.2rem' }}
                 />
                 
                 {error && (
-                    <p style={{ color: 'red', marginTop: '1rem', fontSize: '0.875rem' }}>
+                    <p style={{ color: 'var(--color-accent)', marginTop: '1rem', fontSize: '0.875rem', textAlign: 'center' }}>
                         {error}
                     </p>
                 )}
 
-                <div style={{ marginTop: '2rem' }}>
+                <div style={{ marginTop: '3rem', textAlign: 'center' }}>
                     <button type="submit" className="btn" disabled={isLoading || !token.trim()}>
-                        {isLoading ? 'CONNECTING...' : 'CONNECT'} →
+                        {isLoading ? 'ENTERING...' : 'ENTER ARCHIVE'}
                     </button>
                 </div>
             </form>
 
-            <p style={{ marginTop: '4rem', fontSize: '0.875rem', color: '#999' }}>
-                Need a token?{' '}
+            <p style={{ marginTop: '4rem', fontSize: '0.875rem', color: 'var(--color-text-muted)', textAlign: 'center' }}>
                 <a 
                     href="https://github.com/settings/tokens/new?scopes=repo&description=Mnemosyne" 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    style={{ textDecoration: 'underline' }}
+                    style={{ borderBottom: '1px solid var(--color-text-muted)' }}
                 >
-                    Generate here
+                    Generate Key
                 </a>
-                {' '}(requires repo scope)
             </p>
         </div>
     );
