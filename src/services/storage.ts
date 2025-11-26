@@ -12,10 +12,13 @@ export class StorageService {
     }
 
     async init() {
+        console.log("StorageService: init started");
         const repo = await this.github.getRepo(REPO_NAME);
         if (!repo) {
+            console.log("StorageService: Repo not found, creating...");
             await this.github.createRepo(REPO_NAME);
         }
+        console.log("StorageService: init completed");
     }
 
     async saveItem(item: Item) {

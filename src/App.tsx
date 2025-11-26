@@ -16,14 +16,18 @@ function App() {
     return null;
   }, [github]);
 
+  const [initError, setInitError] = useState<string | null>(null);
+
   useEffect(() => {
     const initStorage = async () => {
       if (storage) {
         try {
+          setInitError(null);
           await storage.init();
           setIsStorageReady(true);
-        } catch (e) {
+        } catch (e: any) {
           console.error("Failed to init storage", e);
+          setInitError(e.message || "Failed to initialize storage. Check console for details.");
         }
       }
     };
@@ -39,7 +43,22 @@ function App() {
   }
 
   if (!isStorageReady) {
-    return <div className="container flex items-center justify-center" style={{ height: '100vh' }}>Initializing your mind...</div>;
+    return (
+      <div className="container flex items-center justify-center" style={{ height: '100vh', flexDirection: 'column', gap: '1rem' }}>
+        <p>Initializing your mind...</p>
+        {initError && (
+          <div style={{ color: 'red', maxWidth: '400px', textAlign: 'center' }}>
+            <p>Error: {initError}</p>
+            <button
+              onClick={logout}
+              style={{ marginTop: '1rem', textDecoration: 'underline', background: 'none', border: 'none', cursor: 'pointer' }}
+            >
+              Try logging out and back in
+            </button>
+          </div>
+        )}
+      </div>
+    );
   }
 
   return (

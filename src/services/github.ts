@@ -21,30 +21,35 @@ export class GitHubService {
 
   async getRepo(repoName: string) {
     if (!this.owner) await this.getUser();
+    console.log(`Checking for repo: ${this.owner}/${repoName}`);
     try {
       const { data } = await this.octokit.rest.repos.get({
         owner: this.owner!,
         repo: repoName,
       });
+      console.log("Repo found");
       return data;
     } catch (e) {
+      console.log("Repo not found or error", e);
       return null;
     }
   }
 
   async createRepo(repoName: string) {
+    console.log(`Creating repo: ${repoName}`);
     const { data } = await this.octokit.rest.repos.createForAuthenticatedUser({
       name: repoName,
       private: true,
       auto_init: true,
       description: "Mnemosyne Memory Storage",
     });
+    console.log("Repo created");
     return data;
   }
 
   async createFile(path: string, content: string, message: string) {
     if (!this.owner || !this.repo) throw new Error("Repo not set");
-    
+
     // Base64 encode content for GitHub API
     const contentEncoded = btoa(unescape(encodeURIComponent(content)));
 
@@ -65,7 +70,7 @@ export class GitHubService {
         repo: this.repo,
         path,
       });
-      
+
       if ('content' in data) {
         const content = decodeURIComponent(escape(atob(data.content)));
         return content;
@@ -75,21 +80,21 @@ export class GitHubService {
       return null;
     }
   }
-  
+
   async listFiles(path: string) {
-      if (!this.owner || !this.repo) throw new Error("Repo not set");
-      try {
-          const { data } = await this.octokit.rest.repos.getContent({
-              owner: this.owner,
-              repo: this.repo,
-              path,
-          });
-          if (Array.isArray(data)) {
-              return data;
-          }
-          return [];
-      } catch (e) {
-          return [];
+    if (!this.owner || !this.repo) throw new Error("Repo not set");
+    try {
+      const { data } = await this.octokit.rest.repos.getContent({
+        owner: this.owner,
+        repo: this.repo,
+        path,
+      });
+      if (Array.isArray(data)) {
+        return data;
       }
+      return [];
+    } catch (e) {
+      return [];
+    }
   }
 }
