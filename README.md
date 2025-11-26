@@ -1,75 +1,59 @@
 # Mnemosyne
 
-A magical personal archive for references, memories, curiosities and wonders. Inspired by Aby Warburg's Mnemosyne Atlas.
+**Mnemosyne.**
 
-## Features
+Mnemosyne is a magical personal archive for references, memories, curiosities, and wonders. Inspired by Aby Warburg's *Mnemosyne Atlas*, it reimagines the digital pinboard as a liquid, ethereal space where connections can be discovered naturally.
 
-- **Invisible Interface** — Content-first design where UI elements appear only when needed
-- **Universal Capture** — Double-click anywhere to add notes, drop images to save them, paste links
-- **Smart Search** — Search by content, tags, or type (`image`, `note`, `link`)
-- **GitHub Storage** — All data stored in a private GitHub repository you control
-- **Offline-First** — Local caching for instant access
+> **Try it live:** [mnemosyne.gbrlpzz.com](https://mnemosyne.gbrlpzz.com)
 
-## Getting Started
+## 🔮 The Ethos
 
-### Prerequisites
+- **Invisible Interface**: UI elements fade away, leaving only your content floating in a liquid glass expanse.
+- **Magical Interactions**: Hover to reveal, double-click to edit. No clutter, just focus.
+- **Private by Design**: Your data lives in *your* GitHub repository. Mnemosyne is just a lens.
 
-- Node.js 18+
-- A GitHub account
+## ✨ Features
 
-### Installation
+- **Universal Capture**: 
+  - Double-click anywhere to add a note.
+  - Drag & drop images directly onto the canvas.
+  - Paste links to automatically generate rich previews with embeds.
+- **Smart Search**: Filter by content, tags, type (`image`, `note`), or time (`yesterday`, `last week`).
+- **Privacy First**: 100% client-side. Connects directly to your GitHub. No tracking, no middleman.
+
+## 🚀 How to Use
+
+### Option 1: Hosted (Recommended)
+
+Visit [mnemosyne.gbrlpzz.com](https://mnemosyne.gbrlpzz.com).
+
+Mnemosyne works on a **Bring Your Own Key (BYOK)** model. 
+1. Generate a **GitHub Personal Access Token** (Classic) with `repo` scope.
+2. Enter it to unlock the archive.
+3. The app automatically creates a private `mnemosyne-db` repository in your account.
+
+Your token is stored only in your browser's local storage and used directly against the GitHub API. It never touches our servers (because there are no servers).
+
+### Option 2: Self-Host
+
+Clone and run it locally or deploy to your own Vercel instance.
 
 ```bash
 npm install
 npm run dev
 ```
 
-### Setup
 
-1. Create a GitHub OAuth App at [github.com/settings/developers](https://github.com/settings/developers)
-2. Set the callback URL to your app's URL
-3. Add your Client ID to the environment
+## 📂 Data Structure
 
-The app will automatically create a private `mnemosyne-db` repository in your GitHub account to store your data.
+Your data belongs to you. Check your `mnemosyne-db` repository:
 
-## Usage
-
-| Action | How |
-|--------|-----|
-| Add a note | Double-click anywhere |
-| Add an image | Drag & drop onto the page |
-| Add a link | Paste a URL |
-| Edit | Double-click on any card |
-| Delete | Hover card → click the dot → click again to confirm |
-| Search | Hover the dot at the bottom |
-| Filter by type | Search `image`, `note`, or `link` |
-
-## Tech Stack
-
-- React + TypeScript
-- Vite
-- TanStack Query
-- GitHub API (Octokit)
-- CSS (no frameworks)
-
-## Architecture
-
-```
-src/
-├── components/     # UI components
-├── contexts/       # Auth context
-├── services/       # GitHub & storage services
-├── types/          # TypeScript definitions
-└── index.css       # All styles
-```
-
-Data is stored as individual JSON files in your GitHub repository:
 ```
 mnemosyne-db/
-├── data/           # Item JSON files
-└── assets/         # Uploaded images
+├── data/           # JSON files for every note, link, and image
+└── assets/         # Raw image files
 ```
 
 ## License
 
-MIT License — see [LICENSE](LICENSE)
+MIT License — see [LICENSE](LICENSE).
