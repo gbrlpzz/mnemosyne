@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import type { Item } from '../types';
 import { StorageService } from '../services/storage';
+import { imageCache } from '../services/cache';
 
 interface ItemCardProps {
     item: Item;
@@ -92,10 +93,24 @@ export function ItemCard({ item, storage, onUpdate, onDelete }: ItemCardProps) {
         return null;
     }, [item.type, item.content, embed]);
 
-    // Load image URL
+    // Load image URL with caching
     useEffect(() => {
-        if (item.type === 'image' && item.image) {
-            storage.getAssetUrl(item.image).then(setImageUrl).catch(console.error);
+        const imageId = item.image;
+        if (item.type === 'image' && imageId) {
+            // Check cache first
+            const cachedUrl = imageCache.get(imageId);
+            if (cachedUrl) {
+                setImageUrl(cachedUrl);
+                return;
+            }
+            
+            // Fetch and cache
+            storage.getAssetUrl(imageId).then(url => {
+                if (url) {
+                    imageCache.set(imageId, url);
+                    setImageUrl(url);
+                }
+            }).catch(console.error);
         }
     }, [item.image, item.type, storage]);
 
@@ -179,7 +194,7 @@ export function ItemCard({ item, storage, onUpdate, onDelete }: ItemCardProps) {
         }
     };
 
-    // Render embed
+    // Render embed with lazy loading
     const renderEmbed = () => {
         if (!embed) return null;
 
@@ -192,7 +207,8 @@ export function ItemCard({ item, storage, onUpdate, onDelete }: ItemCardProps) {
                             title="YouTube video"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                             allowFullScreen
-                            style={{ width: '100%', height: '100%', border: 'none', borderRadius: '2px' }}
+                            loading="lazy"
+                            style={{ width: '100%', height: '100%', border: 'none', borderRadius: '8px' }}
                         />
                     </div>
                 );
@@ -204,7 +220,8 @@ export function ItemCard({ item, storage, onUpdate, onDelete }: ItemCardProps) {
                             title="Vimeo video"
                             allow="autoplay; fullscreen; picture-in-picture"
                             allowFullScreen
-                            style={{ width: '100%', height: '100%', border: 'none', borderRadius: '2px' }}
+                            loading="lazy"
+                            style={{ width: '100%', height: '100%', border: 'none', borderRadius: '8px' }}
                         />
                     </div>
                 );
@@ -215,7 +232,8 @@ export function ItemCard({ item, storage, onUpdate, onDelete }: ItemCardProps) {
                             src={embed.embedUrl}
                             title="Spotify"
                             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                            style={{ width: '100%', height: '152px', border: 'none', borderRadius: '8px' }}
+                            loading="lazy"
+                            style={{ width: '100%', height: '152px', border: 'none', borderRadius: '12px' }}
                         />
                     </div>
                 );
@@ -256,6 +274,7 @@ export function ItemCard({ item, storage, onUpdate, onDelete }: ItemCardProps) {
                         <img 
                             src={previewImageUrl} 
                             alt="" 
+                            loading="lazy"
                             onError={() => setPreviewError(true)}
                         />
                     </div>
@@ -270,7 +289,7 @@ export function ItemCard({ item, storage, onUpdate, onDelete }: ItemCardProps) {
                         </div>
                     )}
                     <div className="link-preview-meta">
-                        {favicon && <img src={favicon} alt="" className="link-preview-favicon" />}
+                        {favicon && <img src={favicon} alt="" className="link-preview-favicon" loading="lazy" />}
                         <span>{hostname}</span>
                     </div>
                 </div>
@@ -356,7 +375,7 @@ export function ItemCard({ item, storage, onUpdate, onDelete }: ItemCardProps) {
         >
             {item.type === 'image' && imageUrl && (
                 <div className="card-image-container">
-                    <img src={imageUrl} alt={item.content} />
+                    <img src={imageUrl} alt={item.content} loading="lazy" />
                 </div>
             )}
 

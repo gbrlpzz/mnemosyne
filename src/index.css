@@ -127,14 +127,15 @@ h1, h2, h3 {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   padding: 24px;
-  border-radius: 8px;
+  border-radius: 16px;
   box-shadow: 
-    0 0 0 1px rgba(0,0,0,0.04),
-    0 8px 32px rgba(0,0,0,0.08);
+    0 20px 40px rgba(0, 0, 0, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   animation: scaleIn 0.4s var(--ease-out-expo);
 }
 
@@ -269,25 +270,34 @@ h1, h2, h3 {
 @media (min-width: 1440px) { .grid-swiss { columns: 4; } }
 @media (min-width: 1920px) { .grid-swiss { columns: 5; } }
 
-/* Card - Swiss Proportions */
+/* Card - Liquid Glass Style */
 .grid-item {
   break-inside: avoid;
   margin-bottom: 24px;
   position: relative;
-  background: var(--color-card);
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.6) 100%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: 16px;
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.02), 
+    0 1px 2px rgba(0, 0, 0, 0.03),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.6);
   transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
   cursor: pointer;
   overflow: hidden;
-  border: 1px solid rgba(0,0,0,0.02);
+  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 .grid-item:hover {
-  box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+  box-shadow: 
+    0 16px 40px rgba(0, 0, 0, 0.08), 
+    0 4px 12px rgba(0, 0, 0, 0.04),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.9);
   transform: translateY(-4px) scale(1.005);
   z-index: 10;
-  border-color: rgba(0,0,0,0.04);
+  border-color: rgba(255, 255, 255, 0.8);
 }
 
 
@@ -366,7 +376,7 @@ h1, h2, h3 {
 
 .link-preview-content {
   padding: 20px 24px 24px;
-  background: var(--color-card);
+  background: rgba(255, 255, 255, 0.3); /* Subtle tint */
 }
 
 .link-preview-title {
@@ -577,21 +587,27 @@ h1, h2, h3 {
   position: relative;
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 100px;
   padding: 8px 20px;
   width: 240px;
   transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.04),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .login-input-wrapper.focused {
   background: rgba(255, 255, 255, 0.85);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: 
+    0 12px 32px rgba(0, 0, 0, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.8);
   transform: translateY(-2px);
   width: 280px;
+  border-color: rgba(255, 255, 255, 0.8);
 }
 
 .login-pill-input {
@@ -812,10 +828,14 @@ h1, h2, h3 {
   width: min(360px, 85vw);
   height: 44px;
   border-radius: 22px;
-  background: var(--color-card);
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   box-shadow: 
-    0 8px 24px -4px rgba(0,0,0,0.08),
-    0 0 0 1px var(--color-border);
+    0 8px 24px -4px rgba(0, 0, 0, 0.06),
+    0 4px 12px rgba(0, 0, 0, 0.04),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   display: flex;
   align-items: center;
   padding: 0 18px;

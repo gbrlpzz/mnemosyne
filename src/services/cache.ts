@@ -1,7 +1,9 @@
 import type { Item } from '../types';
 
 const CACHE_KEY = 'mnemosyne_items_cache';
-const CACHE_TTL = 1000 * 60 * 5; // 5 minutes
+const CACHE_TTL = 1000 * 60 * 30; // 30 minutes
+const IMAGE_CACHE_KEY = 'mnemosyne_images_cache';
+const IMAGE_CACHE_TTL = 1000 * 60 * 60 * 24; // 24 hours
 
 interface CacheData {
     items: Item[];
@@ -113,4 +115,68 @@ export class CacheService {
 
 // Singleton instance
 export const cache = new CacheService();
+
+// Image URL cache (separate from items cache)
+interface ImageCacheData {
+    urls: Record<string, string>;
+    timestamp: number;
+}
+
+class ImageCacheService {
+    private urlCache: Map<string, string> = new Map();
+    private initialized = false;
+
+    private load(): void {
+        if (this.initialized) return;
+        this.initialized = true;
+        
+        try {
+            const data = localStorage.getItem(IMAGE_CACHE_KEY);
+            if (!data) return;
+            
+            const parsed: ImageCacheData = JSON.parse(data);
+            if (Date.now() - parsed.timestamp > IMAGE_CACHE_TTL) {
+                localStorage.removeItem(IMAGE_CACHE_KEY);
+                return;
+            }
+            
+            Object.entries(parsed.urls).forEach(([key, url]) => {
+                this.urlCache.set(key, url);
+            });
+        } catch {
+            // Ignore cache errors
+        }
+    }
+
+    get(imageId: string | undefined): string | null {
+        if (!imageId) return null;
+        this.load();
+        return this.urlCache.get(imageId) || null;
+    }
+
+    set(imageId: string | undefined, url: string): void {
+        if (!imageId) return;
+        this.load();
+        this.urlCache.set(imageId, url);
+        this.persist();
+    }
+
+    private persist(): void {
+        const urls: Record<string, string> = {};
+        this.urlCache.forEach((url, key) => {
+            urls[key] = url;
+        });
+        
+        try {
+            localStorage.setItem(IMAGE_CACHE_KEY, JSON.stringify({
+                urls,
+                timestamp: Date.now()
+            }));
+        } catch {
+            // Ignore storage errors
+        }
+    }
+}
+
+export const imageCache = new ImageCacheService();
 

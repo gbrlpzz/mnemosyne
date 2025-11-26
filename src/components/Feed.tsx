@@ -103,7 +103,8 @@ export function Feed({ storage, filterBy = 'all', sortBy = 'date', searchQuery =
     const { data: items, isLoading, error, isFetching } = useQuery({
         queryKey: ['items'],
         queryFn: () => storage.getItems(),
-        staleTime: 1000 * 60 * 2,
+        staleTime: 1000 * 60 * 10, // 10 minutes
+        gcTime: 1000 * 60 * 30, // 30 minutes garbage collection
         initialData: () => {
             const cached = storage.getCachedItems();
             return cached.length > 0 ? cached : undefined;
