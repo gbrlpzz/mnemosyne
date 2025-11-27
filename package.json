@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
+  "license": "Apache-2.0",
   "dependencies": {
     "@tanstack/react-query": "^5.90.11",
     "@vercel/analytics": "^1.5.0",
