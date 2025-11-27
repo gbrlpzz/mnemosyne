@@ -11,7 +11,7 @@ Mnemosyne is a magical personal archive for references, memories, curiosities, a
 - **Universal Capture**: 
   - Double-click anywhere to add a note.
   - Drag & drop images directly onto the canvas.
-  - Paste links to automatically generate rich previews with embeds.
+  - Paste links to automatically .
 - **Smart Search**: Filter by content, tags, type (`image`, `note`), or time (`yesterday`, `last week`).
 - **Privacy First**: 100% client-side. Connects directly to your GitHub. No tracking, no middleman.
 
